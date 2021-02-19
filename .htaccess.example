@@ -2,3 +2,6 @@ RewriteEngine on
 RewriteBase /
 RewriteCond %{REQUEST_METHOD} PUT
 RewriteRule ^ sfmaven.php [PT]
+
+# If you have indexes on, it may be desirable to hide sfmaven; uncomment the below line to do so
+#IndexIgnore sfmaven.php
