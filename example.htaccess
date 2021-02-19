@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteBase /
+RewriteCond %{REQUEST_METHOD} PUT
+RewriteRule ^ sfmaven.php [PT]
