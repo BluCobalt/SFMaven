@@ -51,7 +51,7 @@ $auth = array(
 /**
  * Ensure that the request method is GET or PUT, and throw a 405 if it isn't.
  */
-function assertProperMethod(): void
+function checkRequestMethod(): void
 {
     $method = $_SERVER["REQUEST_METHOD"];
     if (!($method == "GET" || $method == "PUT"))
@@ -65,7 +65,7 @@ function assertProperMethod(): void
 /**
  * Make sure that the request is properly authenticated
  */
-function assertAuthenticated(): void
+function checkAuth(): void
 {
     global $authRequired;
     if ($authRequired)
@@ -90,19 +90,12 @@ function assertAuthenticated(): void
     }
 }
 
-assertProperMethod();
+checkRequestMethod();
 
 if ($_SERVER["REQUEST_METHOD"] == "PUT")
 {
-    assertAuthenticated();
-    if ($_SERVER["REQUEST_URI"][0] == "/")
-    {
-        // i don't know if REQUEST_URI will always return with a / at the beginning
-        $path = ltrim($_SERVER["REQUEST_URI"], "/");
-    } else
-    {
-        $path = $_SERVER["REQUEST_URI"];
-    }
+    checkAuth();
+    $path = $_SERVER["REQUEST_URI"];
     if (!file_exists(dirname($path)))
     {
         $oldmask = umask(0);
@@ -117,6 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT")
     fclose($outfile);
 } elseif ($_SERVER["REQUEST_METHOD"] == "GET" && $debugEnabled)
 {
-    assertAuthenticated();
+    checkAuth();
     // some sort of diagnostics page would go here, with things like the php version and statistics
 }
