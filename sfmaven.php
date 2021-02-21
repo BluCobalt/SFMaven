@@ -13,12 +13,6 @@
 $mode = 0775;
 
 /**
- * Amount of data to read at a time
- * default: 1024
- */
-$chunk = 1024;
-
-/**
  * Enable debug interface (work in progress)
  * default: false
  */
@@ -90,6 +84,13 @@ function checkAuth(): void
     }
 }
 
+function pipe_streams($in, $out)
+{
+    $size = 0;
+    while (!feof($in)) $size += fwrite($out,fread($in,8192));
+    return $size;
+}
+
 checkRequestMethod();
 
 if ($_SERVER["REQUEST_METHOD"] == "PUT")
@@ -102,11 +103,11 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT")
         mkdir(dirname($path), $mode, true);
         umask($oldmask);
     }
-    $infile = fopen("php://input", "r");
+    $putdata = fopen("php://input", "r");
     $outfile = fopen($path, "w");
-    stream_copy_to_stream($infile, $outfile, $chunk);
+    pipe_streams($putdata, $outfile);
     chmod($path, $mode);
-    fclose($infile);
+    fclose($putdata);
     fclose($outfile);
 } elseif ($_SERVER["REQUEST_METHOD"] == "GET" && $debugEnabled)
 {
